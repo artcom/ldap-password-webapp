@@ -16,6 +16,9 @@ def validate_password(current, new_pw)
 
     ['must contain at least one uppercase character', 
       lambda {|_, new_pw| new_pw.scan(/[A-Z]/).size < 1}], 
+
+    ['must contain at least one special ASCII character',
+      lambda {|_, new_pw| new_pw.scan(/[\W]/).size < 1}],
   ]
 
   # collect messages for all failing predicates
