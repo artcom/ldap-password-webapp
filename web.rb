@@ -30,6 +30,14 @@ module Ac
     require 'digest/sha1' 
     require 'base64' 
     require 'securerandom' 
+    require 'yaml'
+
+    # load configuration
+    config = YAML.load_file('config.yml')
+    @ldap_host = config['ldap_host']
+    @ldap_port = config['ldap_port']
+    @ldap_user_base_dn = config['ldap_user_base_dn']
+    @ldap_auth_method = config['ldap_auth_method']
 
     def salt_please
       SecureRandom.random_bytes(4) # 16) 
@@ -47,12 +55,11 @@ module Ac
     # return nil or error message string
     def change_password(username, oldpw, newpw)
 
-      # TODO: extract hard wired base domain
-      user_dn = "uid=#{username},ou=users,dc=artcom,dc=de"
+      user_dn = "uid=#{username},"+@ldap_user_base_dn
       ldap = Net::LDAP.new(
-      # TODO: extract hard wired server domain
-        host: "ldap.intern.artcom.de", port: 389, 
-        auth: { method: :simple, username: user_dn, password: oldpw }
+        host: @ldap_host, port: @ldap_port,
+        auth: { method: @ldap_auth_method, username: user_dn, password: oldpw },
+        encryption: :simple_tls
       )
       ldap.bind or (return [ldap.get_operation_result.message])
 

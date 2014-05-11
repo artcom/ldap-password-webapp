@@ -10,6 +10,8 @@ Development
 -----------
 
     bundle install
+    cp config.yml.example config.yml
+    edit config.yml
     foreman start
     open http://localhost:5000
 
