@@ -1,6 +1,9 @@
+ENV['RACK_ENV'] ||= 'development'
 require 'rubygems'
 require 'bundler/setup'
-Bundler.require(:default)
+Bundler.require(:default, ENV['RACK_ENV'].to_sym)
+
+$:.unshift(File.join(File.dirname(__FILE__), 'lib'))
 
 # returns array with error messages or nil
 def validate_password(current, new_pw)
