@@ -24,5 +24,5 @@ Production deploy
 Meta
 ----
 
-Created by Dirk Lüsebrink
+Created by Dirk Lüsebrink/art+com AG
 Released under the MIT License: http://www.opensource.org/licenses/mit-license.php
