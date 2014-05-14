@@ -3,7 +3,10 @@ source "https://rubygems.org"
 gem 'sinatra', '~>1.4.4'
 gem 'net-ldap'
 
-gem 'byebug', :group => [:development, :test]
+
+group :development, :test do
+  gem 'byebug'
+end
 
 group :development do
   gem 'foreman'
@@ -14,7 +17,9 @@ group :test do
   gem 'rack-test', require: 'rack/test'
   gem 'rspec'
   gem 'guard'
+  gem 'guard-bundler'
+  gem 'guard-rspec'
   #gem 'guard-minitest'
   gem 'rb-fsevent'
-  gem 'growl_notify'
+  #gem 'growl_notify'
 end
