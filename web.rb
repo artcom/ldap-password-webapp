@@ -1,6 +1,10 @@
+ENV['RACK_ENV'] ||= 'development'
 require 'rubygems'
 require 'bundler/setup'
-Bundler.require(:default)
+Bundler.require(:default, ENV['RACK_ENV'].to_sym)
+
+$:.unshift(File.join(File.dirname(__FILE__), 'lib'))
+require 'ldap-password'
 
 # returns array with error messages or nil
 def validate_password(current, new_pw)
@@ -25,64 +29,16 @@ def validate_password(current, new_pw)
   checks.map {|msg, p| p.call(current, new_pw) && msg || nil}.compact
 end
 
-module Ac
-  module Ldap
-    require 'digest/sha1' 
-    require 'base64' 
-    require 'securerandom' 
-    require 'yaml'
-
-    # load configuration
-    config = YAML.load_file('config.yml')
-    @ldap_host = config['ldap_host']
-    @ldap_port = config['ldap_port']
-    @ldap_user_base_dn = config['ldap_user_base_dn']
-    @ldap_auth_method = config['ldap_auth_method']
-
-    def salt_please
-      SecureRandom.random_bytes(4) # 16) 
-    end
-    def ssha_password(txt, salt = salt_please)
-      puts "salt: #{Base64.encode64(salt)}"
-      '{SSHA}' + Base64.encode64(Digest::SHA1.digest(txt + salt) + salt).chomp! 
-    end
-
-    def nt_password(txt, txt_encoding = 'UTF-8')
-      txt_ucs2 = txt.encode("UTF-16LE", txt_encoding)
-      OpenSSL::Digest::MD4.new(txt_ucs2).hexdigest.upcase
-    end
-
-    # return nil or error message string
-    def change_password(username, oldpw, newpw)
-
-      user_dn = "uid=#{username},"+@ldap_user_base_dn
-      ldap = Net::LDAP.new(
-        host: @ldap_host, port: @ldap_port,
-        auth: { method: @ldap_auth_method, username: user_dn, password: oldpw },
-        encryption: :simple_tls
-      )
-      ldap.bind or (return [ldap.get_operation_result.message])
-
-      ldap.modify(
-        dn: user_dn, operations: [
-          [:replace, :sambaNTPassword, nt_password(newpw)], 
-          [:replace, :sambaPwdLastSet, Time.now.to_i.to_s],
-          [:replace, :userPassword , ssha_password(newpw)],
-          [:replace, :shadowLastChange , (Time.now.to_i / 86400).to_s],
-        ]
-      ) ? [] : [ldap.get_operation_result.message]
-    end
-
-    extend(self)
-  end # ~Ac::Ldap
-end # ~Ac
 # returns array of error strings or nil
 def change_password(username, password, new_pw)
   errors = validate_password(password, new_pw)
   return errors unless errors.empty?
 
-  Ac::Ldap::change_password(username, password, new_pw)
+  LdapPassword::change_password(username, password, new_pw)
 end
+
+set :root, File.dirname(__FILE__)
+set :views, Proc.new { File.join(root, "views") }
 
 configure do
   enable :sessions
