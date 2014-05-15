@@ -25,4 +25,34 @@ describe LdapPassword do
   it 'defaults to simple auth' do
     expect(subject.config['ldap_auth_method']).to eq(:simple)
   end
+
+  describe 'NT password' do
+    let(:pw) { subject.nt_password('foobar') }
+    it 'is a string' do
+      expect(pw).to be_kind_of(String)
+    end
+
+    it 'is not equal to the plain text' do
+      expect(pw).not_to eq('foobar')
+    end
+
+    it 'of resonable length' do
+      expect(pw.length).to be > 'foobar'.length
+    end
+  end
+
+  describe 'SSHA password' do
+    let(:pw) { subject.ssha_password('foobar') }
+    it 'is a string' do
+      expect(pw).to be_kind_of(String)
+    end
+
+    it 'is not equal to the plain text' do
+      expect(pw).not_to eq('foobar')
+    end
+
+    it 'of resonable length' do
+      expect(pw.length).to be > 'foobar'.length
+    end
+  end
 end

@@ -25,7 +25,7 @@ module LdapPassword
     SecureRandom.random_bytes(byte_count) # 16) 
   end
   def ssha_password(txt, salt = salt_please)
-    puts "salt: #{Base64.encode64(salt)}"
+    #puts "salt: #{Base64.encode64(salt)}"
     '{SSHA}' + Base64.encode64(Digest::SHA1.digest(txt + salt) + salt).chomp! 
   end
 
