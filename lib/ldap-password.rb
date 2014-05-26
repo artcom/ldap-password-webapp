@@ -37,13 +37,15 @@ module LdapPassword
   # return nil or error message string
   def change_password(username, oldpw, newpw)
 
+    debugger if ENV['LDAP_PASSWORD_DEBUG']
+
     user_dn = "uid=#{username},#{config['ldap_user_base_dn']}"
     ldap = Net::LDAP.new(
       host: config['ldap_host'], port: config['ldap_port'],
       auth: {
         username: user_dn, password: oldpw, method: config['ldap_auth_method']
-      },
-      encryption: :simple_tls
+      }
+      #,encryption: :simple_tls
     )
     ldap.bind or (return [ldap.get_operation_result.message])
 
