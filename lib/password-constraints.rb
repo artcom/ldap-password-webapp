@@ -2,6 +2,9 @@ module PasswordConstraints
 
   # returns array with error messages or nil
   def validate(new_pw, current = nil)
+  
+    return [] if ENV['LDAP_PASSWORD_SKIP_VALIDATION']
+
     checks = [
       ['new password must differ from current', 
         lambda {|current, new_pw| current.nil? || current != new_pw}], 
@@ -15,8 +18,8 @@ module PasswordConstraints
       ['must contain at least one uppercase character', 
         lambda {|_, new_pw| 0 < new_pw.scan(/[A-Z]/).size}], 
 
-#      ['must contain at least one special ASCII character',
-#        lambda {|_, new_pw| 0 < new_pw.scan(/[\W]/).size}],
+      ['must contain at least one special ASCII character',
+        lambda {|_, new_pw| 0 < new_pw.scan(/[\W]/).size}],
     ]
 
     # reduce list of checks into list of messages for failing tests
