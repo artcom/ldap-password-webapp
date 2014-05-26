@@ -21,6 +21,16 @@ Production deploy
     to be defined
 
 
+Testing
+-------
+
+Project is prepped with a travis.yml script for continous testing on github. 
+
+For TDD style it contains a Guardfile. Start with:
+
+  $ bundle exec guard
+
+
 Meta
 ----
 
