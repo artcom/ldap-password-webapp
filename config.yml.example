@@ -2,3 +2,4 @@ ldap_host: "ldap.company.com"
 ldap_port: 636
 ldap_user_base_dn: "ou=users,dc=company,dc=com"
 ldap_auth_method: :simple
+base_url: "https://ldap.company.com/basepath/"

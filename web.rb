@@ -45,10 +45,13 @@ post '/change_password' do
                        ['new passwords do no match']
                      end
 
-  redirect to (session[:errors].empty? ? '/success' : '/')
+  redirect to (session[:errors].empty? ?
+       "#{LdapPassword::config['base_url']}/success" :
+       "#{LdapPassword::config['base_url']}/")
 end
 
 get '/success' do
   session.delete(:username)
   erb :thank_you
 end
+
